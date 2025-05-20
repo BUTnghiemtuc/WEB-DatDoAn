@@ -1,13 +1,28 @@
+import { Link } from "react-router-dom";
+import "./Header.css";
+
 function Header({ user, onLogout }) {
   return (
     <header className="navbar">
       <div className="logo">
-        <Link to="/" style={{ textDecoration: "none", color: "#00b14f" }}>K-FOOD</Link>
+        <Link to="/" style={{ textDecoration: "none", color: "#00b14f", fontWeight: "bold", fontSize: "24px" }}>
+          K-FOOD
+        </Link>
       </div>
+
       <div className="nav-actions">
         {user ? (
           <>
             <span>👤 {user}</span>
+            <Link to="/account">
+              <button>Tài khoản</button>
+            </Link>
+            <Link to="/orders">
+              <button>Lịch sử</button>
+            </Link>
+            <Link to="/cart">
+              <button>Giỏ hàng</button>
+            </Link>
             <button onClick={onLogout}>Đăng xuất</button>
           </>
         ) : (
@@ -15,7 +30,7 @@ function Header({ user, onLogout }) {
             <button>Đăng nhập/Đăng ký</button>
           </Link>
         )}
-        <select>
+        <select style={{ marginLeft: "12px" }}>
           <option>VI</option>
           <option>EN</option>
         </select>
@@ -23,3 +38,5 @@ function Header({ user, onLogout }) {
     </header>
   );
 }
+
+export default Header;

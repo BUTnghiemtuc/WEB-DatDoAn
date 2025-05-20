@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 }
+.promo {
+  padding: 20px;
+}
+
+.promo-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
