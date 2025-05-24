@@ -1,0 +1,33 @@
+.admin-orders-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+}
+
+.admin-order-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.admin-order-card p {
+  margin: 6px 0;
+}
+
+.admin-order-card label {
+  display: block;
+  margin-top: 10px;
+}
+
+.admin-order-card select {
+  padding: 6px;
+  margin-top: 4px;
+}
+
+.admin-order-card ul {
+  margin-top: 10px;
+  padding-left: 20px;
+}

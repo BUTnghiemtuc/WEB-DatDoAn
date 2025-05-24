@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import "./Header.css";
 
-function Header({ user, onLogout }) {
+function Header({ onLogout }) {
+  const user = localStorage.getItem("user");
+
   return (
     <header className="navbar">
       <div className="logo">

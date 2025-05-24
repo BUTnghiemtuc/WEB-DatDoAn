@@ -7,18 +7,24 @@ exports.register = async (req, res) => {
   const { username, password, full_name, role } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    db.query(
-      "INSERT INTO users (username, password, full_name, role) VALUES (?, ?, ?, ?)",
-      [username, hashedPassword, full_name, role || "user"],
-      (err, result) => {
-        if (err) return res.status(500).json({ message: "Lỗi đăng ký", error: err });
-        res.json({ message: "Đăng ký thành công" });
-      }
-    );
+    const request = db.request();
+
+    request.input("username", username);
+    request.input("password", hashedPassword);
+    request.input("full_name", full_name);
+    request.input("role", role || "user");
+
+    await request.query(`
+      INSERT INTO users (username, password, full_name, role)
+      VALUES (@username, @password, @full_name, @role)
+    `);
+
+    res.json({ message: "Đăng ký thành công" });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi server", error: err });
+    res.status(500).json({ message: "Lỗi đăng ký", error: err.message });
   }
 };
+
 
 exports.login = async (req, res) => {
   try {
@@ -45,7 +51,17 @@ exports.login = async (req, res) => {
         { expiresIn: "1d" }
       );
 
-      res.json({ message: "Đăng nhập thành công", token, user });
+      res.json({
+        message: "Đăng nhập thành công",
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          full_name: user.full_name,
+          role: user.role
+        }
+      });
+
     });
   } catch (err) {
     console.error("💥 Lỗi tại login:", err);

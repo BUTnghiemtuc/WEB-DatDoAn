@@ -1,10 +1,26 @@
-// HomePage.jsx
+import React, { useEffect, useState } from "react";
 import SearchBox from "../components/SearchBox";
 import PromoCard from "../components/PromoCard";
-import nemNuong from "../assets/nemNuong.png";
-import mcdonald from "../assets/mcdonald.png";
+import { API_BASE_URL } from "../api/config";
 
 function HomePage({ user }) {
+  const [foods, setFoods] = useState([]);
+
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/foods`);
+        if (!res.ok) throw new Error("Lỗi khi tải danh sách món ăn");
+        const data = await res.json();
+        setFoods(data); // data phải là array các món ăn
+      } catch (err) {
+        console.error("Lỗi tải món ăn:", err.message);
+      }
+    };
+
+    fetchFoods();
+  }, []);
+
   return (
     <>
       <SearchBox />
@@ -13,22 +29,17 @@ function HomePage({ user }) {
           Ưu đãi K-Food tại <span style={{ color: "#00b14f" }}>Hà Nội</span>
         </h2>
         <div className="promo-list">
-          <PromoCard
-            imgSrc={nemNuong}
-            title="Nem Nướng"
-            category="Món Khác"
-            rating="4.8"
-            time="35 phút"
-            distance="5.5 km"
-          />
-          <PromoCard
-            imgSrc={mcdonald}
-            title="McDonald's"
-            category="Fastfood"
-            rating="4.3"
-            time="25 phút"
-            distance="2.2 km"
-          />
+          {foods.map((food, index) => (
+            <PromoCard
+              key={index}
+              imgSrc={food.image}
+              title={food.name}
+              category={food.category }
+              rating={food.rating }
+              time={food.time_estimate }
+              distance={food.distance }
+            />
+          ))}
         </div>
       </section>
     </>

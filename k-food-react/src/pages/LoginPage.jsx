@@ -1,17 +1,37 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../api/config";
 
 function LoginPage({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (username === "admin" && password === "123456") {
-      onLogin(username);
-      navigate("/"); // chuyển về trang chủ
-    } else {
-      alert("Sai tài khoản hoặc mật khẩu!");
+  const handleLogin = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!res.ok) throw new Error("Đăng nhập thất bại");
+
+      const data = await res.json();
+      const user = data.user;
+
+      if (!user) throw new Error("Không có thông tin người dùng trả về");
+
+      // Lưu vào localStorage
+      localStorage.setItem("user", user.username);
+      localStorage.setItem("role", user.role);
+
+      // Gọi onLogin để App.jsx cập nhật
+      onLogin(user.username, user.role);
+
+      navigate("/");
+    } catch (err) {
+      alert("Đăng nhập thất bại: " + err.message);
     }
   };
 
