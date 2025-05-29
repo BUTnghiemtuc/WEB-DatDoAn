@@ -1,30 +1,96 @@
 .food-detail-container {
-  max-width: 600px;
-  margin: 40px auto;
+  max-width: 1000px;
+  margin: 30px auto;
   padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
 }
 
 .food-image {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  width: 360px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
 }
 
-.food-desc {
-  font-size: 1.1rem;
-  margin-bottom: 12px;
+.food-info {
+  flex: 1;
+}
+
+.food-info h2 {
+  margin-bottom: 10px;
+}
+
+.food-info p {
+  margin: 6px 0;
 }
 
 .add-to-cart-btn {
-  background-color: #00b14f;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #28a745;
   color: white;
-  padding: 12px 20px;
-  font-size: 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #218838;
+}
+
+/* Review section */
+.review-section {
+  margin-top: 40px;
+  padding: 20px;
+  border-top: 1px solid #ccc;
+}
+
+.review-section h3 {
+  margin-bottom: 15px;
+}
+
+.review-section ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.review-section li {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+/* Form */
+.review-form {
   margin-top: 20px;
+}
+
+.review-form textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.review-form select {
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.review-form button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.review-form button:hover {
+  background-color: #0056b3;
 }

@@ -10,6 +10,7 @@ import AdminHomePage from "./pages/home/AdminHomePage";
 import ShipperHomePage from "./pages/home/ShipperHomePage";
 import RestaurantHomePage from "./pages/home/RestaurantHomePage";
 import FoodDetailPage from "./pages/FoodDetailPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import AccountPage from "./pages/AccountPage";
@@ -20,6 +21,7 @@ import OrderManager from "./pages/admin/OrderManager";
 import FoodManager from "./pages/admin/FoodManager";
 import ShipperHistoryPage from "./pages/shipper/ShipperHistoryPage";
 import ShipperOrderManager from "./pages/shipper/ShipperOrderManager";
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -65,12 +67,14 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/orders" element={<OrderHistoryPage />} />
+        <Route path="/orders/:id" element={<OrderDetailPage />} />
         <Route path="/admin/users" element={<UserManager />} />
         <Route path="/admin/orders" element={<OrderManager />} />
         <Route path="/admin/foods" element={<FoodManager />} />
         <Route path="/admin/stats" element={<StatsPage />} />
         <Route path="/shipper/history" element={<ShipperHistoryPage />} />
         <Route path="/shipper/order" element={<ShipperOrderManager />} /> 
+        <Route path="/foods/:id" element={<FoodDetailPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>

@@ -20,13 +20,14 @@ function LoginPage({ onLogin }) {
       const data = await res.json();
       const user = data.user;
 
-      if (!user) throw new Error("Không có thông tin người dùng trả về");
+      if (!user || !user.id) throw new Error("Không có thông tin người dùng trả về");
 
-      // Lưu vào localStorage
-      localStorage.setItem("user", user.username);
+      // ✅ Lưu object user vào localStorage
+      localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("role", user.role);
+      localStorage.setItem("token", data.token); // nếu có dùng token
 
-      // Gọi onLogin để App.jsx cập nhật
+      // ✅ Gọi callback để App cập nhật header (nếu có)
       onLogin(user.username, user.role);
 
       navigate("/");

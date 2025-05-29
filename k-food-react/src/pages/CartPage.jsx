@@ -1,72 +1,90 @@
-// src/pages/CartPage.jsx
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom"; // ✅ THÊM thiếu
-import "./CartPage.css";
+import { useNavigate } from "react-router-dom";
+import "./CartPage.css"; // ✅ Đảm bảo import đúng file
 
 function CartPage() {
-  const [cartItems, setCartItems] = useState([]);
+  const [cart, setCart] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
-    }
+    const stored = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(stored);
   }, []);
 
-  const handleQuantityChange = (index, newQty) => {
-    const updated = [...cartItems];
-    updated[index].quantity = newQty;
-    setCartItems(updated);
+  const updateQuantity = (id, amount) => {
+    const updated = cart.map((item) =>
+      item.id === id
+        ? { ...item, quantity: Math.max(1, item.quantity + amount) }
+        : item
+    );
+    setCart(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
   };
 
-  const handleRemove = (index) => {
-    const updated = cartItems.filter((_, i) => i !== index);
-    setCartItems(updated);
+  const removeItem = (id) => {
+    const updated = cart.filter((item) => item.id !== id);
+    setCart(updated);
     localStorage.setItem("cart", JSON.stringify(updated));
   };
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+  const handleCheckout = () => {
+    navigate("/checkout");
+  };
 
   return (
     <div className="cart-container">
-      <h2>Giỏ hàng</h2>
+      <h2>🛒 Giỏ hàng của bạn</h2>
 
-      {cartItems.length === 0 ? (
-        <p>Giỏ hàng của bạn đang trống.</p>
-      ) : (
-        <>
-          <div className="cart-list">
-            {cartItems.map((item, index) => (
-              <div key={index} className="cart-item">
-                <img src={item.image} alt={item.name} />
-                <div className="info">
-                  <h3>{item.name}</h3>
-                  <p>{item.price.toLocaleString()} đ</p>
-                  <input
-                    type="number"
-                    min="1"
-                    value={item.quantity}
-                    onChange={(e) =>
-                      handleQuantityChange(index, parseInt(e.target.value))
-                    }
-                  />
-                  <button onClick={() => handleRemove(index)}>Xóa</button>
+      <div className="cart-list">
+        {cart.length === 0 ? (
+          <p>Giỏ hàng đang trống.</p>
+        ) : (
+          cart.map((item) => (
+            <div className="cart-item" key={item.id}>
+              <img src={`/${item.image_url}`} alt={item.name} />
+              <div className="info">
+                <h5>{item.name}</h5>
+                <p className="text-success fw-bold">{item.price.toLocaleString()} đ</p>
+                <div>
+                  <button
+                    className="btn btn-sm btn-outline-secondary me-1"
+                    onClick={() => updateQuantity(item.id, -1)}
+                  >
+                    -
+                  </button>
+                  <span>{item.quantity}</span>
+                  <button
+                    className="btn btn-sm btn-outline-secondary ms-1"
+                    onClick={() => updateQuantity(item.id, 1)}
+                  >
+                    +
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
+              <div>
+                <p className="fw-bold">{(item.price * item.quantity).toLocaleString()} đ</p>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => removeItem(item.id)}
+                >
+                  Xóa
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
+      {cart.length > 0 && (
+        <>
           <div className="cart-total">
-            <strong>Tổng cộng:</strong> {total.toLocaleString()} đ
-            <br />
-            <Link to="/checkout">
-              <button className="submit-order-btn">Tiến hành thanh toán</button>
-            </Link>
+            Tổng cộng: <span className="text-danger">{total.toLocaleString()} đ</span>
           </div>
+          <button className="submit-order-btn" onClick={handleCheckout}>
+            ➕ Thanh toán
+          </button>
         </>
       )}
     </div>
