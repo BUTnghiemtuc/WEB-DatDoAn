@@ -3,68 +3,72 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
+const sql = db.sql;
+
+// Đăng ký tài khoản
 exports.register = async (req, res) => {
   const { username, password, full_name, role } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const request = db.request();
 
-    request.input("username", username);
-    request.input("password", hashedPassword);
-    request.input("full_name", full_name);
-    request.input("role", role || "user");
-
-    await request.query(`
-      INSERT INTO users (username, password, full_name, role)
-      VALUES (@username, @password, @full_name, @role)
-    `);
+    const request = await db.request(); // ✅ thêm await
+    await request
+      .input("username", sql.VarChar, username)
+      .input("password", sql.VarChar, hashedPassword)
+      .input("full_name", sql.NVarChar, full_name)
+      .input("role", sql.VarChar, role || "user")
+      .query(`
+        INSERT INTO users (username, password, full_name, role)
+        VALUES (@username, @password, @full_name, @role)
+      `);
 
     res.json({ message: "Đăng ký thành công" });
   } catch (err) {
+    console.error("🔥 Lỗi đăng ký:", err);
     res.status(500).json({ message: "Lỗi đăng ký", error: err.message });
   }
 };
 
-
+// Đăng nhập
 exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const request = db.request();
-    request.input("username", username);
+    const request = await db.request(); // ✅ thêm await
+    const result = await request
+      .input("username", sql.VarChar, username)
+      .query("SELECT * FROM users WHERE username = @username");
 
-    request.query("SELECT * FROM users WHERE username = @username", async (err, result) => {
-      if (err || result.recordset.length === 0) {
-        return res.status(401).json({ message: "Tài khoản không tồn tại" });
-      }
+    const user = result.recordset[0];
 
-      const user = result.recordset[0];
-      const isMatch = await bcrypt.compare(password, user.password);
+    if (!user) {
+      return res.status(401).json({ message: "Tài khoản không tồn tại" });
+    }
 
-      if (!isMatch) {
-        return res.status(401).json({ message: "Sai mật khẩu" });
-      }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Sai mật khẩu" });
+    }
 
-      const token = jwt.sign(
-        { id: user.id, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: "1d" }
-      );
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET || "secret", // fallback nếu chưa có biến môi trường
+      { expiresIn: "1d" }
+    );
 
-      res.json({
-        message: "Đăng nhập thành công",
-        token,
-        user: {
-          id: user.id,
-          username: user.username,
-          full_name: user.full_name,
-          role: user.role
-        }
-      });
-
+    res.json({
+      message: "Đăng nhập thành công",
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        full_name: user.full_name,
+        role: user.role,
+      },
     });
+
   } catch (err) {
     console.error("💥 Lỗi tại login:", err);
-    res.status(500).json({ message: "Lỗi server trong login", error: err });
+    res.status(500).json({ message: "Lỗi server trong login", error: err.message });
   }
 };

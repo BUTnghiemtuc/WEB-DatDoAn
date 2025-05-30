@@ -25,9 +25,19 @@ function CheckoutPage() {
     let user;
     try {
       user = JSON.parse(userRaw);
-    } catch {
-      return alert("⚠ Dữ liệu người dùng không hợp lệ!");
+      console.log("🧪 Dữ liệu user parse ra:", user);
+      if (typeof user !== "object" || user === null || typeof user.id !== "number") {
+        console.warn("⚠ Dữ liệu user không hợp lệ:", user);
+        localStorage.removeItem("user");
+        return alert("⚠ Dữ liệu người dùng không hợp lệ! Đã đăng xuất.");
+      }
+    } catch (err) {
+      console.warn("🔥 JSON parse lỗi:", err);
+      localStorage.removeItem("user");
+      return alert("⚠ Dữ liệu người dùng không hợp lệ! Đã đăng xuất.");
     }
+
+    console.log("👤 Dữ liệu user trước khi gửi đơn:", user);
 
     if (!address.trim()) return alert("⚠ Vui lòng nhập địa chỉ giao hàng!");
     if (cart.length === 0) return alert("⚠ Giỏ hàng đang trống!");
@@ -37,10 +47,11 @@ function CheckoutPage() {
       address,
       payment_method: paymentMethod,
       total_price: total,
-      items: cart.map(item => ({
+      items: cart.map((item) => ({
         food_id: item.id,
-        quantity: item.quantity
-      }))
+        quantity: item.quantity,
+        price: item.price,
+      })),
     };
 
     try {
@@ -99,11 +110,13 @@ function CheckoutPage() {
           <ul>
             {cart.map((item) => (
               <li key={item.id}>
-                {item.name} × {item.quantity} — {(item.price * item.quantity).toLocaleString()} đ
+                {item.name} × {item.quantity} —{" "}
+                {(item.price * item.quantity).toLocaleString()} đ
               </li>
             ))}
             <li className="fw-bold mt-2">
-              Tổng cộng: <span className="text-danger">{total.toLocaleString()} đ</span>
+              Tổng cộng:{" "}
+              <span className="text-danger">{total.toLocaleString()} đ</span>
             </li>
           </ul>
         </div>

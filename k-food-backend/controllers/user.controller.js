@@ -6,7 +6,8 @@ exports.getAll = async (req, res) => {
     const users = await User.getAllUsers();
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: "Lỗi lấy danh sách user", error: err });
+    console.error("🔥 Lỗi getAllUsers:", err);
+    res.status(500).json({ message: "Lỗi lấy danh sách user", error: err.message });
   }
 };
 
@@ -16,7 +17,7 @@ exports.getById = async (req, res) => {
     if (!user) return res.status(404).json({ message: "Không tìm thấy user" });
     res.json(user);
   } catch (err) {
-    res.status(500).json({ message: "Lỗi truy vấn", error: err });
+    res.status(500).json({ message: "Lỗi truy vấn", error: err.message });
   }
 };
 
@@ -27,7 +28,8 @@ exports.create = async (req, res) => {
     await User.createUser({ username, password: hashed, full_name, role });
     res.json({ message: "Tạo user thành công" });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi tạo user", error: err });
+    console.error("🔥 Lỗi tạo user:", err);
+    res.status(500).json({ message: "Lỗi tạo user", error: err.message });
   }
 };
 
@@ -36,6 +38,6 @@ exports.remove = async (req, res) => {
     await User.deleteUser(req.params.id);
     res.json({ message: "Xóa user thành công" });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi xóa user", error: err });
+    res.status(500).json({ message: "Lỗi xóa user", error: err.message });
   }
 };

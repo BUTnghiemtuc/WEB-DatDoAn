@@ -2,10 +2,11 @@ const Food = require("../models/food.model");
 
 exports.getAll = async (req, res) => {
   try {
-    const foods = await Food.getAllFoods();
+    const foods = await Food.getAllFoods(); // <- GỌI TỪ model
     res.json(foods);
   } catch (err) {
-    res.status(500).json({ message: "Lỗi lấy danh sách món ăn", error: err });
+    console.error("🔥 Lỗi getAll:", err);
+    res.status(500).json({ message: "Lỗi lấy danh sách món ăn", error: err.message });
   }
 };
 
@@ -18,6 +19,16 @@ exports.getById = async (req, res) => {
     res.status(500).json({ message: "Lỗi truy vấn", error: err });
   }
 };
+
+exports.getByRestaurant = async (req, res) => {
+  try {
+    const foods = await Food.getByRestaurant(req.params.id);
+    res.json(foods);
+  } catch (err) {
+    res.status(500).json({ message: "Lỗi lấy món ăn theo nhà hàng", error: err.message });
+  }
+};
+
 
 exports.create = async (req, res) => {
   try {

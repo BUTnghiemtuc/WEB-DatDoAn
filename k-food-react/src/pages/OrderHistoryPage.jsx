@@ -1,4 +1,3 @@
-
 // src/pages/OrderHistoryPage.jsx
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "../api/config";
@@ -8,7 +7,14 @@ function OrderHistoryPage() {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const userRaw = localStorage.getItem("user");
+    if (!userRaw) return;
+    let user;
+    try {
+      user = JSON.parse(userRaw);
+    } catch {
+      return console.error("⚠ Lỗi đọc dữ liệu người dùng từ localStorage");
+    }
     if (!user?.id) return;
 
     fetch(`${API_BASE_URL}/orders/user/${user.id}`)
@@ -24,7 +30,7 @@ function OrderHistoryPage() {
         <ul>
           {orders.map((order, idx) => (
             <li key={idx}>
-              Mã đơn: {order.id} - Trạng thái: {order.status || "chờ xử lý"} - 
+              Mã đơn: {order.id} - Trạng thái: {order.status || "chờ xử lý"} -{" "}
               <Link to={`/orders/${order.id}`}>Xem chi tiết</Link>
             </li>
           ))}

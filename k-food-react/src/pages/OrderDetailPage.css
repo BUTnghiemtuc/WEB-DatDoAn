@@ -1,0 +1,37 @@
+.order-detail-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.order-detail-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.order-detail-container p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.order-detail-container strong {
+  color: #222;
+  font-weight: 600;
+}
+
+.order-detail-container ul {
+  margin-top: 15px;
+  padding-left: 20px;
+}
+
+.order-detail-container li {
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: #444;
+  list-style-type: "• ";
+}

@@ -22,14 +22,13 @@ function LoginPage({ onLogin }) {
 
       if (!user || !user.id) throw new Error("Không có thông tin người dùng trả về");
 
-      // ✅ Lưu object user vào localStorage
+      // ✅ Lưu user vào localStorage (JSON chuẩn)
       localStorage.setItem("user", JSON.stringify(user));
+      console.log("🧪 Đã lưu user vào localStorage:", localStorage.getItem("user"));
+      localStorage.setItem("token", data.token);
       localStorage.setItem("role", user.role);
-      localStorage.setItem("token", data.token); // nếu có dùng token
 
-      // ✅ Gọi callback để App cập nhật header (nếu có)
-      onLogin(user.username, user.role);
-
+      onLogin(user); 
       navigate("/");
     } catch (err) {
       alert("Đăng nhập thất bại: " + err.message);

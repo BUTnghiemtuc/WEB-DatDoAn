@@ -8,6 +8,8 @@ router.get("/", foodController.getAll);
 // GET /api/foods/:id
 router.get("/:id", foodController.getById);
 
+router.get("/restaurant/:id", foodController.getByRestaurant);
+
 // POST /api/foods
 router.post("/", foodController.create);
 

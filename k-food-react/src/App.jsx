@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import LoginPage from "./pages/LoginPage";
-import HomePage from "./pages/HomePage"; 
+import HomePage from "./pages/HomePage";
 import UserHomePage from "./pages/home/UserHomePage";
 import AdminHomePage from "./pages/home/AdminHomePage";
 import ShipperHomePage from "./pages/home/ShipperHomePage";
@@ -21,25 +21,39 @@ import OrderManager from "./pages/admin/OrderManager";
 import FoodManager from "./pages/admin/FoodManager";
 import ShipperHistoryPage from "./pages/shipper/ShipperHistoryPage";
 import ShipperOrderManager from "./pages/shipper/ShipperOrderManager";
-
+import RestaurantFoodManager from "./pages/restaurant/RestaurantFoodManager";
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // user là object: { id, username, ... }
   const [role, setRole] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const storedRole = localStorage.getItem("role");
-    if (storedUser) setUser(storedUser);
-    if (storedRole) setRole(storedRole);
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser && parsedUser.id) {
+          setUser(parsedUser);
+          setRole(parsedUser.role);
+        }
+      } catch (err) {
+        console.warn("⚠ Dữ liệu user không hợp lệ trong localStorage:", err);
+        localStorage.removeItem("user");
+        localStorage.removeItem("role");
+        setUser(null);
+        setRole(null);
+      }
+    }
   }, []);
 
-  const handleLogin = (username, role) => {
-    setUser(username);
-    setRole(role);
-    localStorage.setItem("user", username);
-    localStorage.setItem("role", role);
+  // ✅ Nhận toàn bộ object user
+  const handleLogin = (userObject) => {
+    setUser(userObject);
+    setRole(userObject.role);
+    localStorage.setItem("user", JSON.stringify(userObject)); // ✅ lưu object
+    localStorage.setItem("role", userObject.role);
   };
+
 
   const handleLogout = () => {
     setUser(null);
@@ -73,8 +87,9 @@ function App() {
         <Route path="/admin/foods" element={<FoodManager />} />
         <Route path="/admin/stats" element={<StatsPage />} />
         <Route path="/shipper/history" element={<ShipperHistoryPage />} />
-        <Route path="/shipper/order" element={<ShipperOrderManager />} /> 
+        <Route path="/shipper/order" element={<ShipperOrderManager />} />
         <Route path="/foods/:id" element={<FoodDetailPage />} />
+        <Route path="/restaurant/foods" element={<RestaurantFoodManager />} />
       </Routes>
       <Footer />
     </BrowserRouter>
