@@ -1,34 +1,59 @@
 import React, { useEffect, useState } from "react";
 import { API_BASE_URL } from "../../api/config";
+import "./RestaurantFoodManager.css";
 
 function RestaurantFoodManager() {
   const [foods, setFoods] = useState([]);
-  const [form, setForm] = useState({ name: "", price: "", description: "", image_url: "" });
+  const [restaurantId, setRestaurantId] = useState(null);
+  const [form, setForm] = useState({
+    name: "",
+    price: "",
+    description: "",
+    image_url: ""
+  });
   const [editingId, setEditingId] = useState(null);
 
-  const restaurant = JSON.parse(localStorage.getItem("user"));
-  const restaurantId = restaurant?.id;
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  const fetchFoods = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/foods/restaurant/${restaurantId}`);
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error("Dữ liệu không hợp lệ");
-      setFoods(data);
-    } catch (err) {
-      console.error("🔥 Lỗi khi tải danh sách món:", err);
-      setFoods([]);
-    }
-  };
-
+  // Lấy restaurant_id từ user.id
   useEffect(() => {
+    const fetchRestaurantId = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/restaurants/user/${user.id}`);
+        const data = await res.json();
+        if (!data?.id) throw new Error("Không tìm thấy nhà hàng");
+        setRestaurantId(data.id);
+      } catch (err) {
+        console.error("❌ Lỗi lấy restaurant_id:", err);
+      }
+    };
+
+    if (user?.id) fetchRestaurantId();
+  }, [user]);
+
+  // Lấy danh sách món ăn
+  useEffect(() => {
+    const fetchFoods = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/foods/by-user/${user.id}`);
+        const data = await res.json();
+        if (!Array.isArray(data)) throw new Error("Dữ liệu không hợp lệ");
+        setFoods(data);
+      } catch (err) {
+        console.error("🔥 Lỗi khi tải danh sách món:", err);
+        setFoods([]);
+      }
+    };
+
     if (restaurantId) fetchFoods();
   }, [restaurantId]);
 
+  // Cập nhật form input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // Thêm hoặc cập nhật món ăn
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -42,8 +67,6 @@ function RestaurantFoodManager() {
       price: Number(form.price),
       restaurant_id: restaurantId
     };
-    
-    console.log("📦 Payload gửi lên:", payload);
 
     try {
       const res = await fetch(url, {
@@ -57,7 +80,10 @@ function RestaurantFoodManager() {
         alert(data.message || "✅ Thành công!");
         setForm({ name: "", price: "", description: "", image_url: "" });
         setEditingId(null);
-        fetchFoods(); // cập nhật lại danh sách
+        // Reload danh sách
+        const refreshed = await fetch(`${API_BASE_URL}/foods/by-user/${user.id}`);
+        const refreshedData = await refreshed.json();
+        setFoods(refreshedData);
       } else {
         alert(data.message || "❌ Thao tác thất bại!");
       }
@@ -67,6 +93,7 @@ function RestaurantFoodManager() {
     }
   };
 
+  // Sửa món ăn
   const handleEdit = (food) => {
     setForm({
       name: food.name,
@@ -77,6 +104,7 @@ function RestaurantFoodManager() {
     setEditingId(food.id);
   };
 
+  // Xoá món ăn
   const handleDelete = async (id) => {
     if (!window.confirm("❗ Xác nhận xoá món ăn?")) return;
     try {
@@ -95,30 +123,28 @@ function RestaurantFoodManager() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="food-manager-container">
       <h3>📋 Quản lý món ăn</h3>
 
-      <form onSubmit={handleSubmit} className="mb-4">
-        <input name="name" placeholder="Tên món" className="form-control mb-2" value={form.name} onChange={handleChange} required />
-        <input name="price" type="number" placeholder="Giá" className="form-control mb-2" value={form.price} onChange={handleChange} required />
-        <input name="image_url" placeholder="Ảnh (URL)" className="form-control mb-2" value={form.image_url} onChange={handleChange} />
-        <textarea name="description" placeholder="Mô tả" className="form-control mb-2" value={form.description} onChange={handleChange} />
-        <button type="submit" className="btn btn-primary">
-          {editingId ? "Cập nhật" : "➕ Thêm món"}
-        </button>
+      <form onSubmit={handleSubmit} className="food-form">
+        <input name="name" placeholder="Tên món" value={form.name} onChange={handleChange} required />
+        <input name="price" type="number" placeholder="Giá" value={form.price} onChange={handleChange} required />
+        <input name="image_url" placeholder="Ảnh (URL)" value={form.image_url} onChange={handleChange} />
+        <textarea name="description" placeholder="Mô tả" value={form.description} onChange={handleChange} />
+        <button type="submit">{editingId ? "Cập nhật" : "➕ Thêm món"}</button>
       </form>
 
       {Array.isArray(foods) && foods.length > 0 ? (
-        <ul className="list-group">
+        <ul className="food-list">
           {foods.map(food => (
-            <li key={food.id} className="list-group-item d-flex justify-content-between align-items-center">
-              <div>
+            <li key={food.id} className="food-item">
+              <div className="food-details">
                 <strong>{food.name}</strong> – {food.price.toLocaleString()}đ
-                <div><small>{food.description}</small></div>
+                <small>{food.description}</small>
               </div>
-              <div>
-                <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(food)}>✏️ Sửa</button>
-                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(food.id)}>🗑️ Xoá</button>
+              <div className="food-actions">
+                <button className="edit-btn" onClick={() => handleEdit(food)}>✏️ Sửa</button>
+                <button className="delete-btn" onClick={() => handleDelete(food.id)}>🗑️ Xoá</button>
               </div>
             </li>
           ))}
@@ -128,6 +154,7 @@ function RestaurantFoodManager() {
       )}
     </div>
   );
+
 }
 
 export default RestaurantFoodManager;

@@ -2,12 +2,21 @@ import { Link } from "react-router-dom";
 import "./Header.css";
 
 function Header({ onLogout }) {
-  const user = localStorage.getItem("user");
+  const userData = localStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
 
   return (
     <header className="navbar">
       <div className="logo">
-        <Link to="/" style={{ textDecoration: "none", color: "#00b14f", fontWeight: "bold", fontSize: "24px" }}>
+        <Link
+          to="/"
+          style={{
+            textDecoration: "none",
+            color: "#00b14f",
+            fontWeight: "bold",
+            fontSize: "24px"
+          }}
+        >
           K-FOOD
         </Link>
       </div>
@@ -15,7 +24,7 @@ function Header({ onLogout }) {
       <div className="nav-actions">
         {user ? (
           <>
-            <span>👤 {user}</span>
+            <span>👤 {user.full_name || user.username}</span>
             <Link to="/account">
               <button>Tài khoản</button>
             </Link>
@@ -32,10 +41,6 @@ function Header({ onLogout }) {
             <button>Đăng nhập/Đăng ký</button>
           </Link>
         )}
-        <select style={{ marginLeft: "12px" }}>
-          <option>VI</option>
-          <option>EN</option>
-        </select>
       </div>
     </header>
   );

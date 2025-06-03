@@ -19,9 +19,11 @@ import StatsPage from "./pages/admin/StatsPage";
 import UserManager from "./pages/admin/UserManager";
 import OrderManager from "./pages/admin/OrderManager";
 import FoodManager from "./pages/admin/FoodManager";
-import ShipperHistoryPage from "./pages/shipper/ShipperHistoryPage";
-import ShipperOrderManager from "./pages/shipper/ShipperOrderManager";
 import RestaurantFoodManager from "./pages/restaurant/RestaurantFoodManager";
+import PendingOrders from "./pages/restaurant/PendingOrders";
+import FoodStatus from "./pages/restaurant/FoodStatus";
+import AssignedOrders from "./pages/shipper/AssignedOrders";
+import DeliveryHistory from "./pages/shipper/DeliveryHistory";
 
 function App() {
   const [user, setUser] = useState(null); // user là object: { id, username, ... }
@@ -86,10 +88,13 @@ function App() {
         <Route path="/admin/orders" element={<OrderManager />} />
         <Route path="/admin/foods" element={<FoodManager />} />
         <Route path="/admin/stats" element={<StatsPage />} />
-        <Route path="/shipper/history" element={<ShipperHistoryPage />} />
-        <Route path="/shipper/order" element={<ShipperOrderManager />} />
         <Route path="/foods/:id" element={<FoodDetailPage />} />
         <Route path="/restaurant/foods" element={<RestaurantFoodManager />} />
+        <Route path="/restaurant/orders" element={<PendingOrders />} />
+        <Route path="/restaurant/food-status" element={<FoodStatus />} />
+        <Route path="/restaurant/availability" element={<FoodStatus />} />
+        <Route path="/shipper/assigned-orders" element={<AssignedOrders />} />
+        <Route path="/shipper/update-status" element={<DeliveryHistory />} />
       </Routes>
       <Footer />
     </BrowserRouter>

@@ -1,4 +1,5 @@
 const Food = require("../models/food.model");
+const foodModel = require("../models/food.model");
 
 exports.getAll = async (req, res) => {
   try {
@@ -17,6 +18,17 @@ exports.getById = async (req, res) => {
     res.json(food);
   } catch (err) {
     res.status(500).json({ message: "Lỗi truy vấn", error: err });
+  }
+};
+
+exports.getByUserId = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    const foods = await foodModel.getFoodsByUserId(userId);
+    res.json(foods);
+  } catch (err) {
+    console.error("🔥 Lỗi getByUserId:", err);
+    res.status(500).json({ message: "Lỗi server khi lấy món ăn theo userId" });
   }
 };
 
@@ -47,6 +59,19 @@ exports.update = async (req, res) => {
     res.status(500).json({ message: "Lỗi cập nhật", error: err });
   }
 };
+
+exports.updateAvailability = async (req, res) => {
+  try {
+    const foodId = parseInt(req.params.id);
+    const { available } = req.body;
+    await foodModel.updateFoodAvailability(foodId, available);
+    res.json({ message: "Cập nhật tình trạng thành công" });
+  } catch (err) {
+    console.error("❌ Lỗi updateAvailability:", err);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
 
 exports.remove = async (req, res) => {
   try {

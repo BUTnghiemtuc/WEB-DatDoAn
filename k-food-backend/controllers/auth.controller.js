@@ -7,27 +7,31 @@ const sql = db.sql;
 
 // Đăng ký tài khoản
 exports.register = async (req, res) => {
-  const { username, password, full_name, role } = req.body;
+  const { id, username, password, full_name, role } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const request = await db.request(); // ✅ thêm await
+    const request = await db.request();
     await request
+      .input("id", sql.Int, id) // 👈 thêm dòng này để nhận id
       .input("username", sql.VarChar, username)
       .input("password", sql.VarChar, hashedPassword)
       .input("full_name", sql.NVarChar, full_name)
       .input("role", sql.VarChar, role || "user")
       .query(`
-        INSERT INTO users (username, password, full_name, role)
-        VALUES (@username, @password, @full_name, @role)
+        SET IDENTITY_INSERT users ON;
+        INSERT INTO users (id, username, password, full_name, role)
+        VALUES (@id, @username, @password, @full_name, @role);
+        SET IDENTITY_INSERT users OFF;
       `);
 
-    res.json({ message: "Đăng ký thành công" });
+    res.json({ message: "Đăng ký thành công với ID" });
   } catch (err) {
     console.error("🔥 Lỗi đăng ký:", err);
     res.status(500).json({ message: "Lỗi đăng ký", error: err.message });
   }
 };
+
 
 // Đăng nhập
 exports.login = async (req, res) => {

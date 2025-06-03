@@ -30,8 +30,16 @@ function CartPage() {
   const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   const handleCheckout = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || user.role !== "user") {
+      alert("⚠️ Chỉ khách hàng mới có thể đặt hàng!");
+      return;
+    }
+
     navigate("/checkout");
   };
+
 
   return (
     <div className="cart-container">

@@ -1,0 +1,73 @@
+.food-status-container {
+  padding: 2rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f7fafc;
+  min-height: 100vh;
+}
+
+.food-status-container h3 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #2d3748;
+}
+
+.food-status-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.food-status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.food-info {
+  font-size: 1.05rem;
+}
+
+.food-info .available {
+  color: #38a169;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.food-info .unavailable {
+  color: #e53e3e;
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+.toggle-button {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toggle-button.available {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.toggle-button.available:hover {
+  background-color: #c53030;
+}
+
+.toggle-button.unavailable {
+  background-color: #38a169;
+  color: white;
+}
+
+.toggle-button.unavailable:hover {
+  background-color: #2f855a;
+}

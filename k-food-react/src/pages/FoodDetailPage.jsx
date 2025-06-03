@@ -12,14 +12,14 @@ function FoodDetailPage() {
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/foods/${id}`)
-      .then(res => res.json())
-      .then(data => setFood(data))
-      .catch(err => console.error("Lỗi khi lấy món ăn:", err));
+      .then((res) => res.json())
+      .then((data) => setFood(data))
+      .catch((err) => console.error("Lỗi khi lấy món ăn:", err));
 
     fetch(`${API_BASE_URL}/reviews/${id}`)
-      .then(res => res.json())
-      .then(data => setReviews(data))
-      .catch(err => console.error("Lỗi khi lấy đánh giá:", err));
+      .then((res) => res.json())
+      .then((data) => setReviews(data))
+      .catch((err) => console.error("Lỗi khi lấy đánh giá:", err));
   }, [id]);
 
   const handleAddToCart = () => {
@@ -39,8 +39,11 @@ function FoodDetailPage() {
   const handleSubmitReview = async (e) => {
     e.preventDefault();
 
+    const user = JSON.parse(localStorage.getItem("user"));
+    const user_id = user?.id || 2; // fallback nếu chưa login
+
     const newReview = {
-      user_id: 2, // TODO: lấy user_id từ session/auth
+      user_id,
       food_id: parseInt(id),
       rating: parseInt(rating),
       comment,
@@ -56,25 +59,38 @@ function FoodDetailPage() {
       alert("🎉 Đã gửi đánh giá!");
       setComment("");
       setRating(5);
-      const updated = await fetch(`${API_BASE_URL}/reviews/${id}`).then(r => r.json());
+      const updated = await fetch(`${API_BASE_URL}/reviews/${id}`).then((r) =>
+        r.json()
+      );
       setReviews(updated);
     } else {
       alert("❌ Gửi đánh giá thất bại!");
     }
   };
 
-  if (!food) return <p style={{ padding: "2rem" }}>⏳ Đang tải món ăn...</p>;
+  if (!food)
+    return <p style={{ padding: "2rem" }}>⏳ Đang tải món ăn...</p>;
 
   return (
     <div className="food-detail-container">
-      <img src={`/${food.image_url}`} alt={food.name} className="food-image" />
+      <img
+        src={`/${food.image_url}`}
+        alt={food.name}
+        className="food-image"
+      />
 
       <div className="food-info">
         <h2>{food.name}</h2>
         <p>{food.description}</p>
-        <p><strong>Loại:</strong> {food.category || "—"}</p>
-        <p><strong>Giá:</strong> {food.price.toLocaleString()} đ</p>
-        <p><strong>Nhà hàng:</strong> {food.restaurant_name || "Không rõ"}</p>
+        <p>
+          <strong>Loại:</strong> {food.category || "—"}
+        </p>
+        <p>
+          <strong>Giá:</strong> {food.price.toLocaleString()} đ
+        </p>
+        <p>
+          <strong>Nhà hàng:</strong> {food.restaurant_name || "Không rõ"}
+        </p>
         <button className="add-to-cart-btn" onClick={handleAddToCart}>
           Thêm vào giỏ hàng
         </button>
@@ -99,9 +115,14 @@ function FoodDetailPage() {
           <h4>Gửi đánh giá của bạn:</h4>
           <label>
             Số sao:
-            <select value={rating} onChange={(e) => setRating(e.target.value)}>
+            <select
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+            >
               {[5, 4, 3, 2, 1].map((v) => (
-                <option key={v} value={v}>{v}</option>
+                <option key={v} value={v}>
+                  {v}
+                </option>
               ))}
             </select>
           </label>

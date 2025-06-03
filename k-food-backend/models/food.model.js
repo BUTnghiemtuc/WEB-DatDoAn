@@ -15,6 +15,20 @@ exports.getFoodById = async (id) => {
   return result.recordset[0];
 };
 
+exports.getFoodsByUserId = async (userId) => {
+  const request = await db.request();
+  const result = await request
+    .input("userId", sql.Int, userId)
+    .query(`
+      SELECT f.*
+      FROM foods f
+      JOIN restaurants r ON f.restaurant_id = r.id
+      WHERE r.user_id = @userId
+    `);
+  return result.recordset;
+};
+
+
 exports.getFoodsByRestaurant = async (restaurantId) => {
   const request = await db.request();
   const result = await request
@@ -50,6 +64,19 @@ exports.updateFood = async (id, food) => {
             SET name = @name, price = @price, image_url = @image_url, description = @description
             WHERE id = @id`);
 };
+
+exports.updateFoodAvailability = async (foodId, available) => {
+  const request = await db.request();
+  await request
+    .input("foodId", sql.Int, foodId)
+    .input("available", sql.Bit, available)
+    .query(`
+      UPDATE foods
+      SET available = @available
+      WHERE id = @foodId
+    `);
+};
+
 
 exports.deleteFood = async (id) => {
   const request = await db.request();
